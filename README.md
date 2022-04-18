@@ -112,9 +112,104 @@ C:\Documents\MyBlog>cd myblog
 C:\Documents\MyBlog\myblog>hugo new theme four
 ```
 
+3. Hugo criará seus novos arquivos de tema que se parecem com isso:
+```
+.
+├── archetypes
+│   └── default.md
+├── content
+├── data
+├── layouts
+├── resources
+│   └── _gen
+│       ├── assets
+│       └── images
+├── static
+├── themes
+│   └──  four
+│           ├── archetypes
+│           │   └── default.md
+│           ├── layouts
+│           │   ├── _default
+│           │   │   ├── baseof.html
+│           │   │   ├── list.html
+│           │   │   └── single.html
+│           │   ├── partials
+│           │   │   ├── footer.html
+│           │   │   ├── head.html
+│           │   │   └── header.html
+│           │   ├── 404.html
+│           │   └── index.html
+│           ├── static
+│           │   ├── css
+│           │   └── js
+│           ├── LICENSE
+│           └── theme.toml
+└── config.toml
+```
 
+Na pasta `layouts`, repare que só vem `baseof.html` pré-preenchido. Se você estiver familiarizado com HTML, observe suas semelhanças. Mas com o Golang, ele vem com códigos de colchetes `{}`.
 
+Hugo é projetado para que cada seção seja codificada separadamente (como parciais) e seja combinada para criar modelos html completos em todas as páginas do seu site ou quando você quiser. Isso é semelhante ao método de programação Python, onde emprega o método DRY (Don't Repeat Yourself).
 
+## Instalar Bootstrap
+
+Para usar o Bootstrap 5 em nosso site, vamos visitar o site deles para obter a documentação.
+
+1. Crie uma nova pasta em sua pasta `four` de temas chamada `assets`. Em seguida, crie duas pastas chamadas `css` e `js` na pasta `assets`. Deve ficar assim:
+```
+four
+    └── assets
+            ├── css
+            └── js
+```
+
+2. Baixe os arquivos CSS e JS compilados no site do Bootstrap. Extraia `bootstrap.min.css` para a pasta `css` e crie um novo arquivo chamado `style.css` para quaisquer alterações personalizadas que possamos ter. Da mesma forma, extraia `bootstrap.bundle.min.js` para a pasta `js` criada anteriormente. A estrutura deve ficar assim até agora:
+```
+four
+    └── assets
+            ├── css
+            │   ├── bootstrap.min.css
+            │   └── style.css
+            └── js
+                └── bootstrap.bundle.min.js
+```
+
+Adicione o seguinte código dentro de `style.css`:
+```
+section {
+  min-height: 50vh;
+}
+
+#heroFour .carousel-item > img {
+  height: 70vh;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+```
+
+3. baseof.html
+
+- Ao lado da tag html, adicione lang=“en” para seguir o Starter Template do Bootstrap.
+- Estamos usando as funções de linha e colunas para criar uma barra lateral responsiva. Adicione um parcial chamado `sidebar.html`(crie um novo arquivo chamado `sidebar.html` na pasta parcial).
+Adicione também uma chamada parcial `scripts.html` (crie um novo arquivo chamado `scripts.html` na pasta parcial também).
+O seu `baseof.html` deve ficar assim:
+```
+<!DOCTYPE html>
+<html lang="en">
+  {{- partial "head.html" . -}}
+  <body>
+    {{- partial "header.html" . -}}
+    <div class="container p-3">
+      <div class="row">
+        <div class="col-sm-7">{{- block "main" . }}{{- end }}</div>
+        <div class="col-sm-5">{{- partial "sidebar.html" . -}}</div>
+      </div>
+    </div>
+    {{- partial "footer.html" . -}} {{- partial "scripts.html" . -}}
+  </body>
+</html>
+```
 
 
 
