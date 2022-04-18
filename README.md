@@ -789,7 +789,113 @@ Se você gosta de usar outros provedores de comentários sugeridos por Hugo , vo
 - remova o nome abreviado do Disqus `config.toml` e
 - mude o parcial `single.html` para um provedor de comentários de sua escolha
 
+## Conteúdo do blog
 
+### Escreva um blog
+Este projeto de blog está quase completo. Agora execute o seguinte no terminal:
+```
+C:\Documents\MyBlog\myblog>hugo new posts/post1.md
+```
+
+Este comando cria uma nova pasta `posts` dentro da pasta `content` com um arquivo markdown chamado `post1.md`:
+```
+---
+title: 'Post1'
+date: 2021-04-01T23:11:13Z
+draft: true
+---
+```
+
+Essas três variáveis ​​são chamadas de `Front Matter` e são baseadas no modelo na pasta `default.md` da pasta `archetypes`. Você pode ajustar seus padrões lá para que, ao executar `hugo new`, o modelo desejado apareça. Vou apenas ajustar `post1.md` para ser assim:
+```
+---
+title: 'My First Post'
+date: 2021-04-01T23:11:13Z
+draft: true
+tags: ['Africa', 'adventure']
+description: 'This is the first post description'
+images: ['/img/post1.webp']
+cover:
+  image: '/img/post1.webp'
+  alt: 'This is a random image from Unsplash'
+  caption: 'This is a random image from Unsplash'
+---
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+incididunt ut labore et dolore magna aliqua. Pellentesque eu tincidunt tortor
+aliquam nulla facilisi cras fermentum odio. A erat nam at lectus urna duis. Sed
+velit dignissim sodales ut eu sem. Lectus urna duis convallis convallis tellus.
+Diam sit amet nisl suscipit adipiscing bibendum est. Sed felis eget velit
+aliquet sagittis id consectetur. Vulputate dignissim suspendisse in est ante in
+nibh mauris cursus. Morbi quis commodo odio aenean. Mollis nunc sed id semper
+risus in hendrerit gravida rutrum. Ac ut consequat semper viverra nam. Hac
+habitasse platea dictumst vestibulum rhoncus. Amet porttitor eget dolor morbi
+non. Justo eget magna fermentum iaculis eu non. Id eu nisl nunc mi ipsum
+faucibus vitae aliquet nec. Aliquam id diam maecenas ultricies. Non sodales
+neque sodales ut etiam. Amet massa vitae tortor condimentum lacinia quis. Erat
+imperdiet sed euismod nisi porta. Nisl suscipit adipiscing bibendum est
+ultricies integer quis auctor. Viverra suspendisse potenti nullam ac. Tincidunt
+id aliquet risus feugiat in. Varius quam quisque id diam vel. Egestas erat
+imperdiet sed euismod nisi. Scelerisque felis imperdiet proin fermentum leo vel
+orci porta non. Ut faucibus pulvinar elementum integer. Fermentum odio eu
+feugiat pretium nibh ipsum consequat nisl.
+```
+
+### Imagens do blog
+Crie um novo arquivo na pasta `static` principal chamado `img` e salve todas as suas imagens para seus posts aqui. Isso é para segregar o conteúdo do seu blog e as imagens do seu tema para facilitar a edição e o gerenciamento do site mais tarde.
+```
+.
+├── archetypes
+│    └── default.md
+├── content
+├── data
+├── layouts
+├── static
+│    └── img
+│         └── post1.webp
+├── themes
+└── config.toml
+```
+
+### Visualização ao vivo
+
+Por fim, a hora de testar seu site em um ambiente web. Hugo vem com um recurso de visualização ao vivo integrado com o servidor Hugo. Basta executar o seguinte comando no terminal (-D está com os rascunhos habilitados para visualizar nosso primeiro post elaborado):
+```
+C:\Documents\MyBlog\myblog>hugo server -D
+```
+
+Vá para qualquer navegador da Web e execute `http://localhost:1313/` . Você deve ser capaz de ver e explorar seu site concluído agora. Salve depois de fazer qualquer alteração para ver a alteração ocorrendo ao vivo.
+
+## Implantar em um site ao vivo
+
+Depois de fazer as alterações e desejar que seu site seja acessível a partir do nome de domínio adquirido, aqui estão as etapas:
+
+### 1. Compre um nome de domínio e hospedagem
+Se você planeja monetizar seu site ou estabelecer uma autoridade, ter seu próprio domínio é o caminho a percorrer. Aqui estão alguns provedores de hospedagem na web recomendados que me ajudam a ganhar uma pequena comissão se você se registrar com esses links:
+
+Para hospedagem gratuita na web para sites estáticos, pode conferir os seguintes links:
+
+- Páginas do Github - https://pages.github.com
+- Netlify - https://www.netlify.com/
+- 000WebHost - https://www.000webhost.com/
+- Firebase - https://firebase.google.com/
+- Google Cloud - https://cloud.google.com/
+
+### 2. draft: false
+
+Altere a matéria frontal de rascunho verdadeiro para falso e verifique todas as funções, imagens e trabalhos de estilo na visualização ao vivo.
+
+### 3. Gerar Site Estático
+
+Quando tudo estiver pronto para produção, execute o seguinte comando:
+```
+C:\Documents\MyBlog\myblog>hugo
+```
+Hugo irá gerar um site estático completo (HTML, CSS, JS) na pasta pública. Para tornar seu site ativo, você só precisa colocar o conteúdo dessa pasta na pasta raiz do seu site.
+
+## Conclusão
+
+Parabéns! Seu site agora está ATIVO na World Wide Web. Se você quiser que eu faça mais tutoriais como este, compartilhe na seção de comentários aqui. Este tutorial do Hugo cobre apenas o básico da criação de um blog funcional, mas simples, usando o Bootstrap 5.
 
 ## Fonte
 https://www.heksagon.net/web-design/build-a-website-with-hugo/
