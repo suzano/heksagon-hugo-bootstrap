@@ -211,13 +211,583 @@ O seu `baseof.html` deve ficar assim:
 </html>
 ```
 
+1. Para o parcial `scripts.html`, adicione o seguinte e clique em salvar:
+```
+{{ $bootstrapbundle := resources.Get "js/bootstrap.bundle.min.js" }}
+<script src="{{ $bootstrapbundle.Permalink }}"></script>
+<!-- Add your custom JS below this line -->
+```
 
+`$bootstrapbundle` é uma variável para recuperar o arquivo de ativos que está dentro da pasta de ativos. Esse método é especialmente útil se você quiser usar os recursos integrados do Hugo, como reduzir ou reduzir arquivos de impressão digital armazenados na pasta de ativos.
 
+## head.html
 
+Para o parcial `head.html`, adicione as seguintes dependências e clique em salvar:
+```
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Generator -->
+  {{- hugo.Generator }}
 
+  <!-- Bootstrap CSS -->
+  {{ $bootstrap := resources.Get "/css/bootstrap.min.css" }}
+  <link rel="stylesheet" href="{{ $bootstrap.Permalink }}" as="style" />
 
+  <!-- Fontawesome Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
 
+  <!-- Custom CSS -->
+  {{ $style := resources.Get "/css/style.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $style.Permalink }}" as="style" />
 
+  <!-- Title -->
+  {{ $title := print .Title " | " .Site.Title }} {{ if .IsHome }}{{ $title =
+  .Site.Title }}{{ end }}
+  <title>{{ $title }}</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="{{- .Site.Params.favicon | default "favicon.ico" |
+  absURL -}}" sizes="256x256"> {{ template "_internal/disqus.html" . }} {{
+  template "_internal/google_news.html" . }} {{ template
+  "_internal/google_analytics.html" . }} {{ template
+  "_internal/google_analytics_async.html" . }} {{ template
+  "_internal/opengraph.html" . }} {{ template "_internal/schema.html" . }} {{
+  template "_internal/twitter_cards.html" . }}
+</head>
+```
+
+### Variáveis
+
+Como você pode ver, a variável `$style` é minificada e impressa. O Minify otimizará o tamanho dos seus arquivos e a impressão digital gerará números aleatórios após o seu `style.css` para manter seu site seguindo a última versão atualizada.
+
+### Variáveis ​​do site e config.toml
+
+Qualquer variável que comece com `.Site`, como `.Site.Title`, será chamada no `config.toml`. Isso significa que você pode ter um valor padronizado para todo o seu site no arquivo de configuração. Você também pode usar `config.yaml` ou `config.json` com base em sua preferência de idioma.
+
+### Modelo
+
+Também adicionei alguns modelos internos prontos para Hugo para os casos de uso mais comuns.
+
+## header.html
+
+Para o parcial `header.html`, adicione o seguinte e clique em salvar:
+```
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ "/" | relURL }}">{{ .Site.Title}}</a>
+
+    <!-- Activated for mobile view -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Menu Start -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {{ range .Site.Menus.main }}
+        <li class="nav-item">
+          {{ $text := print .Name | safeHTML }}
+          <a class="nav-link" title="{{ $text }}" href="{{ .URL }}">
+            {{ $text }}
+          </a>
+        </li>
+        {{ end }}
+      </ul>
+
+      <div class="navbar-nav d-flex flex-row justify-content-around">
+        {{ range .Site.Menus.social }}
+        {{ $title := print .Title | safeHTML }}
+        <a class="nav-link" title="{{ $title }}" href="{{ .URL }}">
+          {{ $text := print .Name | safeHTML }}
+          <i class="{{ $text }}"></i>
+        </a>
+        {{ end }}
+      </div>
+    </div>
+    <!-- Menu End -->
+  </div>
+</nav>
+```
+
+## footer.html
+
+Para o parcial `footer.html`, adicione o seguinte e clique em salvar:
+```
+<footer class="footer text-center bg-dark py-5 text-light">
+  <!-- Change YourName to any name of your choice -->
+  <p>Copyright &copy; {{ now.Format "2006"}} YourName</p>
+  <p>
+    Designed by
+    <a class="link-secondary" href="https://www.heksagon.net/">Heksagon</a> with
+    love ❤
+  </p>
+  <p>
+    <a class="link-secondary" href="#">Back to top</a>
+  </p>
+</footer>
+```
+
+## sidebar.html
+
+Para o parcial `sidebar.html`, adicione o seguinte e clique em salvar:
+```
+<div class="card mx-3 my-5 p-3">
+  <h2>Sidebar</h2>
+  <p>
+    Add any function that you like in the <code>sidebar.html</code> partial.
+  </p>
+</div>
+```
+
+## 404.html
+
+A página 404 é uma página para a qual os visitantes são redirecionados quando o URL após o nome do seu domínio é inválido. Para que ele carregue nessa lógica, é preciso que haja algumas customizações para diferentes servidores e automáticas em outros. Hugo também fornece algumas diretrizes para sites que atendem nesses ambientes:
+
+- Páginas do GitHub e Páginas do GitLab.
+- Apache.
+- Nginx.
+- Amazon AWS S3.
+- Amazon Cloud Front.
+- Servidor Caddie.
+- Netlify.
+- Site estático do Azure.
+- Se você quiser apenas testá-lo na visualização ao vivo, basta acessar `http://localhost:1313/404.html`
+
+Fora da pasta `partials`, nas pastas `layouts`, existem dois arquivos que foram criados que são `404.html` e `index.html`. No `404.html`, adicione o seguinte:
+```
+{{ define "main" }}
+<section id="main" class="text-center d-flex flex-column justify-content-center">
+    <h1>Page Not Found</h1>
+    <div>
+     <h1><a class="btn btn-lg btn-outline-secondary" href="{{ "/" | relURL }}">Go Home</a></h1>
+    </div>
+</section>
+{{ end }}
+```
+
+## metadados.html
+
+`index.html` que é colocado na pasta raiz do seu servidor web é amplamente conhecido como a página inicial. Antes de prosseguirmos com a criação da página inicial, na pasta parciais, crie um `metadata.html` para chamar a data do post do blog. Você também pode ter informações adicionais, como tags, nome do autor e muito mais. Mas para este tutorial, vamos apenas adicionar a data da postagem como metadados assim:
+```
+{{ $dateTime := .PublishDate.Format "2006-01-02" }} {{ $dateFormat :=
+.Site.Params.dateFormat | default "Jan 2, 2006" }}
+<i class="far fa-calendar-alt"></i>
+<time datetime="{{ $dateTime }}">{{ .PublishDate.Format $dateFormat }}</time>
+```
+
+## index.html
+
+A página inicial. Eu adicionei alguns modelos do Bootstrap para você começar o mais rápido possível. Edite para mostrar sua criatividade!
+```
+<!DOCTYPE html>
+<html lang="en">
+{{- partial "head.html" . -}}
+<body>
+{{- partial "header.html" . -}}
+
+<!-- Hero Carousel -->
+<section id="heroFour" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#heroFour" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#heroFour" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#heroFour" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="{{ "/img/hero1.webp" | relURL }}" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-md-block">
+        <h1>Life is either a daring adventure or nothing at all</h1>
+        <p>Helen Keller</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{{ "/img/hero2.webp" | relURL }}" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-md-block">
+        <h1>Traveling – it leaves you speechless, then turns you into a storyteller</h1>
+        <p>Ibn Battuta</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{{ "/img/hero3.webp" | relURL }}" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-md-block">
+        <h1>Life’s a journey not a destination</h1>
+        <p>Aerosmith</p>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroFour" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#heroFour" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</section>
+
+<!-- Our Values -->
+<section class="py-5">
+  <h2 class="text-center">We are committed</h2>
+  <div class="container">
+    <div class="row align-items-center">
+      {{ range .Site.Params.values }}
+      <div class="col-12 col-sm-4 text-center py-5">
+        <i class="{{ .iconclass }} "></i>
+        <h2>{{ .title }}</h2>
+        <p>{{ .description }}</p>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+<!-- Jumbotron -->
+<section class="py-5 bg-warning">
+  <div class="p-5 mb-4 rounded-3">
+
+    <div class="container-fluid py-5">
+      <h1 class="display-5 fw-bold">Custom jumbotron</h1>
+      <p class="col-md-8 fs-4">You are able to create this jumbotron, similar to previous versions of Bootstrap.</p>
+      <button class="btn btn-primary btn-lg" type="button">Button</button>
+    </div>
+
+    <div class="row align-items-md-stretch">
+
+      <div class="col-md-6">
+        <div class="h-100 p-5 text-white bg-dark rounded-3">
+          <h2>Dark background</h2>
+          <p>Swap the background-color utility and add a `.text-*` color utility to mix up the jumbotron look. Then, mix and match with your favourite choice.</p>
+          <button class="btn btn-outline-light" type="button">More ...</button>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="h-100 p-5 bg-light border rounded-3">
+          <h2>Add borders</h2>
+          <p>You can also keep it light and add a border for some added definition to the boundaries of your content. </p>
+          <button class="btn btn-outline-secondary" type="button">Be Creative</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Blog Section -->
+<section class="album py-5 bg-light">
+  <div class="text-center py-5">
+    <h2 class="fs-1">Blog</h2>
+    <p class="fs-4 text-muted">Latest Article</p>
+  </div>
+  <div class="container">
+    <div class="row d-flex justify-content-center">
+      {{ range (.Paginator 3).Pages.ByPublishDate.Reverse }}
+      <div class="col-sm-4 my-3">
+        <div class="card shadow-sm">
+          <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="{{ .Params.cover.image }}" style="object-fit: cover;"></img>
+
+          <div class="card-body">
+            <h3 class="card-text">{{ .Title }}</h3>
+            <p class="card-text">{{ partial "metadata.html" . }}: {{ .Params.description }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a href="{{ .RelPermalink }}">
+                <button type="button" class="btn btn-sm btn-outline-secondary"> View</button></a>
+              </div>
+              <div class="btn-group">
+                {{ with .Params.tags }}
+                {{ range . }}
+                {{ $href := print (absURL "tags/") (urlize .) }}
+                <a class="btn btn-sm btn-outline-secondary" href="{{ $href }}">{{ . }}</a>
+                {{ end }}
+                {{ end }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ end }}
+    </div>
+    <p class="text-end">
+      <a href="{{ "/posts/" | relURL }}">More...</a>
+    </p>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5 bg-warning" style="background-image: url(/img/map-image.png);background-size: contain;background-repeat: no-repeat;">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 d-flex align-items-center">
+        <h2>Contact Us</h2>
+      </div>
+      <div class="col-sm-6">
+        <form action="">
+          <div class="m-3">
+            <label for="exampleFormControlInput1" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="your@email.com">
+          </div>
+          <div class="m-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Your messsage here:</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{- partial "footer.html" . -}}
+{{- partial "scripts.html" . -}}
+</body>
+</html>
+```
+
+## Seção de contato
+
+Na seção de contato, o formulário aqui pode ser substituído por provedores de formulário, como `Formspree.io (https://formspree.io/)` ou `Formsubmit.io (https://formsubmit.io/)` , para que os visitantes do site possam entrar em contato com você. Também é possível codificar sua própria função PHP para receber submissões.
+
+## config.toml
+
+Este arquivo é usado para armazenar as principais informações sobre um site Hugo, integrar determinadas funcionalidades e imagens de chamadas. Todo o valor neste arquivo é ajustado com base nas necessidades do seu site. O mais importante é vincular com o tema que foi criado:
+```
+theme = "four"
+```
+BaseURL é o nome de domínio do seu site, title é o título do seu site, seu próprio `ID do Google Analytics (https://analytics.google.com/analytics/web/)` e seu próprio nome `abreviado do Disqus (https://disqus.com/)`. Aqui está um pequeno exemplo que usei para este tutorial do Hugo:
+
+```
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "Four: Travel Blog"
+theme = "four"
+googleAnalytics = "UA-PROPERTY_ID/G-MEASUREMENT_ID"
+disqusShortname = "yourdiscussshortname"
+
+[params]
+description = "Open Graph Description"
+images = [ "/img/hero1.webp" ]
+title = "Four: Travel Blog"
+favicon = "img/world-map-pin.svg"
+
+  [[params.values]]
+  iconclass = "fas fa-pen text-primary fa-3x py-3"
+  title = "Blog"
+  description = "Dedicated to sharing insightful information"
+
+  [[params.values]]
+  iconclass = "fas fa-bolt text-primary fa-3x py-3"
+  title = "Speed"
+  description = "Our priority in getting the job done fast"
+
+  [[params.values]]
+  iconclass = "fas fa-comment text-primary fa-3x py-3"
+  title = "Chat"
+  description = "Keep in touch with us to know more"
+
+[minify]
+minifyOutput = true
+
+[[menu.main]]
+identifier = "blog"
+name = "Posts"
+url = "/posts/"
+weight = 1
+
+[[menu.main]]
+identifier = "Contact"
+name = "Contact"
+url = "/#contact"
+weight = 2
+
+[[menu.main]]
+identifier = "tags"
+name = "Tags"
+url = "/tags"
+weight = 3
+
+[[menu.social]]
+name = "fab fa-twitter fa-2x link-info"
+title = "Twitter"
+url = "/"
+weight = 1
+
+[[menu.social]]
+name = "fab fa-youtube fa-2x link-danger"
+title = "Youtube"
+url = "/"
+weight = 2
+```
+
+## Imagens
+
+As imagens são um dos elementos mais importantes de um site. Eles tornam seu site colorido e interessante. Se não for otimizado, também pode diminuir a velocidade de carregamento do seu site. Observe que neste exemplo, a maioria das imagens usadas está no formato webp.
+
+Um pequeno artigo sobre como otimizar imagens para o formato WebP. (https://www.heksagon.net/web-design/how-to-optimize-your-website-with-webp-images/)
+
+Na pasta estática do fourtema, crie uma nova pasta chamada `img` para manter as imagens do `config.toml` e `index.html`:
+```
+static
+    ├── css
+    ├── img
+    │    ├── hero1.webp
+    │    ├── hero2.webp
+    │    ├── hero3.webp
+    │    ├── map-image.png
+    │    └── world-map-pin.svg
+    └── js
+```
+
+## Layout padrão Hugo
+Na pasta de layouts de temas, existe outra pasta chamada `_default` que armazena os layouts básicos do Hugo:
+
+1. `list.html` é o modelo de layout para listar todas as postagens do blog
+2. `single.html` é o modelo de layout para listar um único post
+3. `terms.html` é o modelo de layout para listar taxonomias. Nestes exemplos, apenas a `tags` taxonomia é usada.
+
+Cada layout é estilizado com base em classes de Bootstrap adequadas:
+
+### lista.html
+```
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+<div class="row d-flex justify-content-center">
+  {{ range .Pages.ByPublishDate.Reverse }}
+  <div class="col-lg-6 my-3">
+    <div class="card shadow-sm">
+      <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="{{ .Params.cover.image }}" style="object-fit: cover;"></img>
+      <div class="card-body">
+        <h3 class="card-text">{{ .Title }}</h3>
+        <p class="card-text">{{ partial "metadata.html" . }}: {{ .Params.description }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="btn-group">
+            <a href="{{ .RelPermalink }}">
+            <button type="button" class="btn btn-sm btn-outline-secondary"> View</button></a>
+          </div>
+          <div class="btn-group">
+            {{ with .Params.tags }}
+            {{ range . }}
+            {{ $href := print (absURL "tags/") (urlize .) }}
+            <a class="btn btn-sm btn-outline-secondary" href="{{ $href }}">{{ . }}</a>
+            {{ end }}
+            {{ end }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}
+</div>
+{{ end }}
+```
+
+### single.html
+```
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+<img
+  class="w-100"
+  src="{{ .Params.cover.image }}"
+  alt="{{ .Params.cover.alt }}"
+/>
+<p class="text-center">{{ .Params.cover.caption }}</p>
+
+<div class="row text-center">
+  <div class="col">{{ partial "metadata.html" . }}</div>
+  <div class="col">
+    <div class="btn-group">
+      {{ with .Params.tags }} {{ range . }} {{ $href := print (absURL "tags/")
+      (urlize .) }}
+      <a class="btn btn-sm btn-outline-secondary" href="{{ $href }}">{{ . }}</a>
+      {{ end }} {{ end }}
+    </div>
+  </div>
+</div>
+<br /><br />
+{{ .Content }} {{- partial "disqus.html" . -}} {{ end }}
+```
+
+### terms.html
+```
+{{- define "main" }}
+<section class="row">
+  <div class="has-text-centered">
+    <h1 class="fs-1">{{ .Title }}</h1>
+    <p>{{ .Description }}</p>
+  </div>
+  <div class="col">
+    <div class="container">
+      <ul class="list-group">
+        {{- $type := .Type }} {{- range $key, $value := .Data.Terms.Alphabetical
+        }} {{- $name := .Name }} {{- $count := .Count }} {{- with $.Site.GetPage
+        (printf "/%s/%s" $type $name) }}
+        <li class="list-group-item btn btn-sm btn-outline-secondary">
+          <a
+            class="stretched-link text-decoration-none link-secondary fs-4"
+            href="{{ .Permalink }}"
+            >{{ .Name }}
+            <sup
+              ><strong class=""><sup>{{ $count }}</sup></strong></sup
+            ></a
+          >
+        </li>
+        {{- end }} {{- end }}
+      </ul>
+    </div>
+  </div>
+</section>
+{{- end }}{{/* end main */ -}}
+```
+
+## Seção de comentários
+Observe em `single.html`, há uma parcial que não foi criada, `disqus.html`. Esta parcial já está incluída nos templates internos declarados no `head.html`. No entanto, Hugo recomenda adicionar a seguinte parcial chamada `disqus.html` para evitar discussões indesejadas com a conta Disqus associada no ambiente localhost:
+```
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+  ;(function () {
+    // Don't ever inject Disqus on localhost--it creates unwanted     // discussions from 'localhost:1313' on your Disqus account...     if (window.location.hostname == 'localhost') return
+
+    var dsq = document.createElement('script')
+    dsq.type = 'text/javascript'
+    dsq.async = true
+    var disqus_shortname = '{{ .Site.DisqusShortname }}'
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js'
+    ;(
+      document.getElementsByTagName('head')[0] ||
+      document.getElementsByTagName('body')[0]
+    ).appendChild(dsq)
+  })()
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+<a href="https://disqus.com/" class="dsq-brlink"
+  >comments powered by <span class="logo-disqus">Disqus</span></a
+>
+```
+
+Se você gosta de usar outros provedores de comentários sugeridos por Hugo , você pode
+
+- remova o modelo interno do Disqus em `head.html`
+- remova o nome abreviado do Disqus `config.toml` e
+- mude o parcial `single.html` para um provedor de comentários de sua escolha
 
 
 
